@@ -164,30 +164,51 @@ class StorageRUDView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StorageSerializer
 
 
-# ===== ВЫЗОВЫ ПРОЦЕДУР И ФУНКЦИЙ PostgreSQL =====
+
 
 class ProcedureAPIView(APIView):
     # POST /api/procedures/sp_insert_client/
     def post(self, request, proc_name):
         params = list(request.data.values())
+
         try:
+            placeholders = ", ".join(["%s"] * len(params))
+            sql = f"CALL {proc_name}({placeholders})"
+
             with connection.cursor() as cursor:
-                cursor.callproc(proc_name, params)
-            return Response({"status": "ok", "procedure": proc_name}, status=status.HTTP_200_OK)
+                cursor.execute(sql, params)
+
+            return Response(
+                {"status": "ok", "procedure": proc_name},
+                status=status.HTTP_200_OK
+            )
         except Exception as e:
-            return Response({"status": "error", "detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            print("PROC ERROR:", repr(e))
+            return Response(
+                {"status": "error", "detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class FunctionAPIView(APIView):
     # GET /api/functions/fn_get_shop_by_id/?p_id_shop=1
     def get(self, request, func_name):
+        # порядок важен: значения берутся как список
         params = list(request.GET.values())
+
         try:
             with connection.cursor() as cursor:
+                # для функций callproc подходит
                 cursor.callproc(func_name, params)
+
                 cols = [col[0] for col in cursor.description] if cursor.description else []
                 rows = cursor.fetchall() if cursor.description else []
+
             data = [dict(zip(cols, row)) for row in rows]
             return Response(data, status=status.HTTP_200_OK)
+
         except Exception as e:
-            return Response({"status": "error", "detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"status": "error", "detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )

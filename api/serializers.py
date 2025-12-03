@@ -109,7 +109,7 @@ class StaffSerializer(serializers.ModelSerializer):
     def validate_work_experience_other(self, value):
         
         if value is not None and (value < 0 or value > 1000):
-            raise serializers.ValidationError("Стаж должен быть от 0 до 100 лет.")
+            raise serializers.ValidationError("Стаж должен быть от 0 до 1000 месяцев.")
         return value
 
     def validate_number_phone_staff(self, value):
