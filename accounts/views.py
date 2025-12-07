@@ -23,25 +23,25 @@ def register_view(request):
             email = form.cleaned_data["email_client"]
             password = form.cleaned_data["password_client"]
 
-            # 1) Создаём Django-пользователя (для login/logout)
+            
             user = User.objects.create_user(
-                username=email,          # логин = email
+                username=email,          
                 email=email,
                 password=password
             )
 
-            # 2) Создаём запись в таблице client
+           
             Client.objects.create(
                 last_name_client=form.cleaned_data["last_name_client"],
                 first_name_client=form.cleaned_data["first_name_client"],
                 middle_name_client=form.cleaned_data["middle_name_client"],
                 phone_number_client=form.cleaned_data["phone_number_client"],
-                password_client=password,          # при желании можно шифровать отдельно
+                password_client=password,         
                 birth_date=form.cleaned_data["birth_date"],
                 email_client=email
             )
 
-            # 3) Авторизуем и отправляем в профиль
+            
             login(request, user)
             return redirect("menu")
     else:
@@ -53,7 +53,7 @@ def register_view(request):
 def login_view(request):
     error = None
     if request.method == "POST":
-        email = request.POST.get("username")  # поле name="username" в стандартной форме
+        email = request.POST.get("username") 
         password = request.POST.get("password")
 
         user = authenticate(request, username=email, password=password)
@@ -130,7 +130,7 @@ def flowers_list_view(request):
 def flower_detail_view(request, bouquet_id):
     bouquet = Bouquet.objects.get(id_bouquet=bouquet_id)
     positions = BouquetPosition.objects.filter(id_bouquet=bouquet_id)
-    # подгружаем цветы
+    
     flowers = []
     for pos in positions:
         flower = Flower.objects.get(id_flower=pos.id_flower)
@@ -145,7 +145,7 @@ def flower_detail_view(request, bouquet_id):
 
 
 def _get_cart(session):
-    return session.setdefault("cart", {})  # {bouquet_id: quantity}
+    return session.setdefault("cart", {})  
 
 
 @login_required
@@ -194,20 +194,20 @@ def cart_checkout_view(request):
         messages.error(request, "Корзина пуста, оформлять нечего.")
         return redirect("cart")
 
-    # 1. Находим клиента по email текущего пользователя
+    # Находим клиента по email текущего пользователя
     try:
         client = Client.objects.get(email_client=request.user.email)
     except Client.DoesNotExist:
         messages.error(request, "Для оформления заказа нужно быть клиентом.")
         return redirect("cart")
 
-    # 2. Считаем итоговую сумму
+    
     total = Decimal("0.00")
     for key, qty in cart.items():
         b = Bouquet.objects.get(id_bouquet=int(key))
         total += b.price * qty
 
-    # 3. Создаём заказ (id_staff пока не указываем, если в БД разрешён NULL)
+    
     order = Orders.objects.create(
         id_client=client.id_client,
         id_shop=1,
@@ -217,7 +217,7 @@ def cart_checkout_view(request):
         order_date=date.today(),
     )
 
-    # 4. Создаём позиции заказа
+    # Создаём позиции заказа
     for key, qty in cart.items():
         b = Bouquet.objects.get(id_bouquet=int(key))
         OrderPosition.objects.create(
@@ -226,7 +226,7 @@ def cart_checkout_view(request):
             quantity=qty,
         )
 
-    # 5. Списание со склада (по только что созданным позициям)
+    #  Списание со склада (по только что созданным позициям)
     positions = OrderPosition.objects.filter(id_order=order.id_order)
     for pos in positions:
         bouquet_positions = BouquetPosition.objects.filter(id_bouquet=pos.id_bouquet)
@@ -236,7 +236,7 @@ def cart_checkout_view(request):
             storage_item.quantity_flower -= needed
             storage_item.save(update_fields=["quantity_flower"])
 
-    # 6. Очищаем корзину
+    
     request.session["cart"] = {}
     request.session.modified = True
 
@@ -246,16 +246,16 @@ def cart_checkout_view(request):
 
 @login_required
 def my_orders_view(request):
-    # определяем клиента по email авторизованного пользователя
+    
     try:
         client = Client.objects.get(email_client=request.user.email)
     except Client.DoesNotExist:
-        # если это не клиент (например, сотрудник), можно показать пустой список
+        
         orders = []
     else:
         orders = Orders.objects.filter(id_client=client.id_client).order_by("-order_date", "-id_order")
 
-    # собираем краткую информацию по каждому заказу
+    # информация по каждому заказу
     data = []
     for order in orders:
         positions = OrderPosition.objects.filter(id_order=order.id_order)
@@ -333,7 +333,7 @@ def staff_my_orders_view(request):
             items.append(f"{b.name} — {pos.quantity} шт.")
         data.append({"order": order, "items": items})
 
-    # допустимые статусы (из твоей валидации: оформлен, в обработке, собран, завершен)
+    
     statuses = ["оформлен", "в обработке", "собран", "завершен"]
 
     return render(request, "accounts/staff_my_orders.html", {

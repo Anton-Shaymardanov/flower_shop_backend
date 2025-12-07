@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
-from core.models import Client
+from core.models import Client, Staff
 from datetime import date
+
 
 
 class ClientRegisterForm(forms.Form):
@@ -35,3 +36,16 @@ class ClientRegisterForm(forms.Form):
         if p1 and p2 and p1 != p2:
             raise forms.ValidationError("Пароли не совпадают.")
         return cleaned
+    def clean_email_client(self):
+        email = self.cleaned_data["email_client"]
+
+        # проверяем, нет ли уже такого Django-пользователя
+        if User.objects.filter(username=email).exists():
+            raise forms.ValidationError("Пользователь с таким email уже существует.")
+
+        # и в таблицах client / staff
+        if Client.objects.filter(email_client=email).exists() or \
+           Staff.objects.filter(email_staff=email).exists():
+            raise forms.ValidationError("Пользователь с таким email уже существует.")
+
+        return email

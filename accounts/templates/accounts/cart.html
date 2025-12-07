@@ -51,10 +51,7 @@
       {% endfor %}
     </ul>
   {% endif %}
-  <form method="post" action="{% url 'cart_clear' %}">
-  {% csrf_token %}
-  <button class="btn" type="submit" style="background:#888">Очистить корзину</button>
-</form>
+
 {% else %}
   <p>Корзина пустая.</p>
 {% endif %}
