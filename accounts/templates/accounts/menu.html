@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Меню</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#faf5f8; margin:0; }
+    header { background:#c2185b; color:white; padding:10px 20px; }
+    a { text-decoration:none; color:#c2185b; }
+    .menu { padding:20px; }
+    .card { background:white; padding:15px; margin-bottom:10px; border-radius:8px;
+            box-shadow:0 2px 4px rgba(0,0,0,0.05); }
+  </style>
+</head>
+<body>
+<header>
+  <span>Цветочный магазин</span>
+  <span style="float:right">
+    <a style="color:white" href="{% url 'profile' %}">Профиль</a> |
+    {{ request.user.username }} |
+    <a style="color:white" href="{% url 'logout' %}">Выйти</a>
+  </span>
+</header>
+
+<div class="menu">
+    {% if is_client %}
+    
+        <div class="card">
+            <h2><a href="{% url 'flowers' %}">Букеты</a></h2>
+            <p>Просмотр всех букетов и добавление в корзину.</p>
+        </div>
+            
+        <div class="card">
+            <h2><a href="{% url 'cart' %}">Корзина</a></h2>
+            <p>Выбранные букеты и сумма заказа.</p>
+        </div>
+        <div class="card">
+            <h2><a href="{% url 'my_orders' %}">Мои заказы</a></h2>
+            <p>История заказов и их статус.</p>
+        </div>
+    {% endif %}
+    {% if is_staff %}
+    <div class="card">
+      <h2><a href="{% url 'profile' %}">Профиль сотрудника</a></h2>
+      <p>Ваши данные и смена пароля.</p>
+    </div>
+
+    <div class="card">
+      <h2><a href="{% url 'staff_free_orders' %}">Доступные заказы</a></h2>
+      <p>Заказы без назначенного сотрудника.</p>
+    </div>
+
+    <div class="card">
+      <h2><a href="{% url 'staff_my_orders' %}">Мои заказы</a></h2>
+      <p>Заказы, которые вы уже взяли.</p>
+    </div>
+    {% endif %}      
+</div>
+</body>
+</html>

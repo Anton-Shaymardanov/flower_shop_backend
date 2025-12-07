@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Профиль</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#faf5f8; margin:0; padding:20px; }
+    .block { background:white; padding:15px; margin-bottom:16px;
+             border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.06); max-width:600px; }
+    .btn { padding:6px 12px; background:#c2185b; color:white; border-radius:4px; border:none; }
+  </style>
+</head>
+<body>
+
+<p><a href="{% url 'menu' %}">← Меню</a></p>
+
+<div class="block">
+  <h2>Информация о профиле</h2>
+  <p>Логин (email): {{ user.email }}</p>
+  <p>Роль: {{ role }}</p>
+
+  {% if is_client and profile_obj %}
+    <p>Фамилия: {{ profile_obj.last_name_client }}</p>
+    <p>Имя: {{ profile_obj.first_name_client }}</p>
+    <p>Отчество: {{ profile_obj.middle_name_client }}</p>
+    <p>Телефон: {{ profile_obj.phone_number_client }}</p>
+    <p>Дата рождения: {{ profile_obj.birth_date }}</p>
+  {% elif is_staff and profile_obj %}
+    <p>Фамилия: {{ profile_obj.last_name_staff }}</p>
+    <p>Имя: {{ profile_obj.first_name_staff }}</p>
+    <p>Должность: {{ profile_obj.position }}</p>
+    <p>Телефон: {{ profile_obj.number_phone_staff }}</p>
+    <p>Магазин ID: {{ profile_obj.id_shop }}</p>
+  {% endif %}
+</div>
+
+<div class="block">
+  <h2>Смена пароля</h2>
+
+  {% if msg %}
+    <p>{{ msg }}</p>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Изменить пароль</button>
+  </form>
+  <p style="font-size:12px;color:#666;">
+    Для смены пароля нужно ввести текущий пароль. Email не меняется.
+  </p>
+</div>
+
+</body>
+</html>

@@ -16,7 +16,7 @@ from .serializers import (
     FlowerCombinationSerializer, StorageSerializer
 )
 
-# ===== SHOPS =====
+
 
 class ShopListCreateView(generics.ListCreateAPIView):
     queryset = Shop.objects.all()
@@ -28,7 +28,7 @@ class ShopRUDView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ShopSerializer
 
 
-# ===== CLIENTS =====
+
 
 class ClientListCreateView(generics.ListCreateAPIView):
     queryset = Client.objects.all()
@@ -40,7 +40,7 @@ class ClientRUDView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ClientSerializer
 
 
-# ===== STAFF =====
+
 
 class StaffListCreateView(generics.ListCreateAPIView):
     queryset = Staff.objects.all()
@@ -60,7 +60,7 @@ class StaffByPositionView(generics.ListAPIView):
         return Staff.objects.filter(position=position)
 
 
-# ===== FLOWER TYPE / FLOWER =====
+
 
 class FlowerTypeListCreateView(generics.ListCreateAPIView):
     queryset = FlowerType.objects.all()
@@ -82,7 +82,7 @@ class FlowerRUDView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FlowerSerializer
 
 
-# ===== BOUQUET / BOUQUET POSITION =====
+
 
 class BouquetListCreateView(generics.ListCreateAPIView):
     queryset = Bouquet.objects.all()
@@ -112,7 +112,7 @@ class BouquetPositionsByBouquetView(generics.ListAPIView):
         return BouquetPosition.objects.filter(id_bouquet=bouquet_id)
 
 
-# ===== ORDERS / ORDER POSITION =====
+
 
 class OrdersListCreateView(generics.ListCreateAPIView):
     queryset = Orders.objects.all()
@@ -142,7 +142,7 @@ class OrderPositionsByOrderView(generics.ListAPIView):
         return OrderPosition.objects.filter(id_order=order_id)
 
 
-# ===== FLOWER COMBINATION / STORAGE =====
+
 
 class FlowerCombinationListCreateView(generics.ListCreateAPIView):
     queryset = FlowerCombination.objects.all()
@@ -191,14 +191,14 @@ class ProcedureAPIView(APIView):
 
 
 class FunctionAPIView(APIView):
-    # GET /api/functions/fn_get_shop_by_id/?p_id_shop=1
+    
     def get(self, request, func_name):
-        # порядок важен: значения берутся как список
+       
         params = list(request.GET.values())
 
         try:
             with connection.cursor() as cursor:
-                # для функций callproc подходит
+                
                 cursor.callproc(func_name, params)
 
                 cols = [col[0] for col in cursor.description] if cursor.description else []

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ bouquet.name }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#faf5f8; margin:0; padding:20px; }
+    .btn { display:inline-block; margin-top:8px; padding:6px 10px;
+           background:#c2185b; color:white; border-radius:4px; }
+    table { border-collapse: collapse; margin-top:10px; }
+    th, td { border:1px solid #ddd; padding:6px 10px; }
+  </style>
+</head>
+<body>
+<p><a href="{% url 'flowers' %}">← Назад к букетам</a></p>
+
+<h1>{{ bouquet.name }}</h1>
+<p>Цена: {{ bouquet.price }} ₽</p>
+
+<h3>Состав:</h3>
+<table>
+  <tr><th>Цветок</th><th>Количество</th></tr>
+  {% for f in flowers %}
+    <tr>
+      <td>{{ f.name }}</td>
+      <td>{{ f.quantity }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="2">Состав не указан.</td></tr>
+  {% endfor %}
+</table>
+
+<form method="post" action="{% url 'cart_add' bouquet.id_bouquet %}">
+  {% csrf_token %}
+  <button class="btn" type="submit">Добавить в корзину</button>
+</form>
+</body>
+</html>

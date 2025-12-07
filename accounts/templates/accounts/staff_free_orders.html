@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Доступные заказы</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#faf5f8; margin:0; padding:20px; }
+    .order { background:white; padding:12px 16px; margin-bottom:12px;
+             border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.06); max-width:700px; }
+    ul { margin:4px 0 0 16px; }
+    .btn { padding:6px 10px; background:#c2185b; color:white; border-radius:4px; border:none; }
+  </style>
+</head>
+<body>
+<p><a href="{% url 'menu' %}">← Меню</a></p>
+
+<h1>Доступные заказы</h1>
+
+{% if orders_data %}
+  {% for od in orders_data %}
+    <div class="order">
+      <h3>Заказ №{{ od.order.id_order }} от {{ od.order.order_date }}</h3>
+      <p>Сумма: {{ od.order.total_amount }} ₽</p>
+      <p>Состав:</p>
+      <ul>
+        {% for item in od.items %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+
+      <form method="post" action="{% url 'staff_take_order' od.order.id_order %}">
+        {% csrf_token %}
+        <button class="btn" type="submit">Взять заказ</button>
+      </form>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>Свободных заказов нет.</p>
+{% endif %}
+
+</body>
+</html>

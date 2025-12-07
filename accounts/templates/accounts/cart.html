@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Корзина</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#faf5f8; margin:0; padding:20px; }
+    table { border-collapse: collapse; width:100%; max-width:700px; }
+    th, td { border:1px solid #ddd; padding:8px; }
+    .btn { display:inline-block; margin-top:12px; padding:8px 14px;
+           background:#c2185b; color:white; border-radius:4px; }
+  </style>
+</head>
+<body>
+<p><a href="{% url 'menu' %}">← Меню</a></p>
+
+<h1>Корзина</h1>
+
+{% if items %}
+  <table>
+    <tr>
+      <th>Букет</th>
+      <th>Количество</th>
+      <th>Сумма</th>
+    </tr>
+    {% for item in items %}
+      <tr>
+        <td>{{ item.bouquet.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.subtotal }} ₽</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <h3>Итого: {{ total }} ₽</h3>
+
+  <form method="post" action="{% url 'cart_checkout' %}">
+    {% csrf_token %}
+    <button class="btn" type="submit">Оплатить</button>
+  </form>
+
+  <form method="post" action="{% url 'cart_clear' %}">
+    {% csrf_token %}
+    <button class="btn" type="submit" style="background:#888">Очистить корзину</button>
+  </form>
+
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <form method="post" action="{% url 'cart_clear' %}">
+  {% csrf_token %}
+  <button class="btn" type="submit" style="background:#888">Очистить корзину</button>
+</form>
+{% else %}
+  <p>Корзина пустая.</p>
+{% endif %}
+</body>
+</html>

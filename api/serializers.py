@@ -15,7 +15,7 @@ class ShopSerializer(serializers.ModelSerializer):
         fields = "__all__"
     
     def validate_email_shop(self, value):
-        # DRF уже проверяет формат EmailField, но можно добавить свои правила
+        
         if Shop.objects.filter(email_shop=value).exists():
             raise serializers.ValidationError("Магазин с таким email уже существует.")
         return value
@@ -41,7 +41,7 @@ class ShopSerializer(serializers.ModelSerializer):
 
 
 class ClientSerializer(serializers.ModelSerializer):
-    # усиливаем проверку формата email
+    
     email_client = serializers.EmailField(max_length=30)
 
     class Meta:
@@ -60,7 +60,7 @@ class ClientSerializer(serializers.ModelSerializer):
         return value
 
     def validate_phone_number_client(self, value):
-        # тот же формат, что и для телефонов сотрудников
+        
         if not re.fullmatch(r"^(\+7\d{10}|7\d{10})$", value):
             raise serializers.ValidationError(
                 "Телефон должен быть в формате +7XXXXXXXXXX или 7XXXXXXXXXX."
@@ -68,7 +68,7 @@ class ClientSerializer(serializers.ModelSerializer):
         return value
 
     def validate_password_client(self, value):
-        # такая же «настоящая» сложность, как для password_staff
+        
         if not 8 <= len(value) <= 20:
             raise serializers.ValidationError(
                 "Пароль должен содержать от 8 до 20 символов."
@@ -144,7 +144,7 @@ class StaffSerializer(serializers.ModelSerializer):
         return value
     
     def validate_password_staff(self, value):
-        # длина
+        
         if not 8 <= len(value) <= 20:
             raise serializers.ValidationError(
                 "Пароль должен содержать от 8 до 20 символов."

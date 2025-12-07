@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Букеты</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#faf5f8; margin:0; }
+    header { background:#c2185b; color:white; padding:10px 20px; }
+    .grid { display:flex; flex-wrap:wrap; gap:16px; padding:20px; }
+    .card { background:white; width:220px; padding:12px;
+            border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.08); }
+    .btn { display:inline-block; margin-top:8px; padding:6px 10px;
+           background:#c2185b; color:white; border-radius:4px; }
+  </style>
+</head>
+<body>
+<header>
+  <a style="color:white" href="{% url 'menu' %}">← Меню</a>
+</header>
+
+<div class="grid">
+  {% for b in bouquets %}
+    <div class="card">
+      <h3><a href="{% url 'flower_detail' b.id_bouquet %}">{{ b.name }}</a></h3>
+      <p>Цена: {{ b.price }} ₽</p>
+      <form method="post" action="{% url 'cart_add' b.id_bouquet %}">
+        {% csrf_token %}
+        <button class="btn" type="submit">Добавить в корзину</button>
+      </form>
+    </div>
+  {% empty %}
+    <p>Букетов пока нет.</p>
+  {% endfor %}
+</div>
+</body>
+</html>
